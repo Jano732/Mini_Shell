@@ -6,8 +6,12 @@
 #include <cstring>
 #include <stdarg.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <sys/types.h>
 
 void directory_navigation(char*);
+void list_files(const char*);
 
 int main(){
 
@@ -31,25 +35,13 @@ while(true){
     int result = strncmp(command, "cd\0", 3); 
  
     if(strncmp(command, "cd ", 3) == 0) directory_navigation(command);
-      
-    printf(command);      
+    if(strncmp(command, "ls", 2) == 0) list_files(current_dir);      
+         
       
 	}
 
     return 0;
 }
-
-/*
-void directory_navigation(const char* dir)
-{
-
-    if(strcmp(dir, "..") || strcmp(dir, "../"))
-    {
-        int res = chdir("..");
-        printf("%i", res);
-    }
-}
-*/
 
   
 void directory_navigation(char* directory)
@@ -65,5 +57,28 @@ void directory_navigation(char* directory)
         if(chdir(upcoming_directory)) 
             printf("chdir() error: %s | %s\n",upcoming_directory, strerror(errno));
     }
+
+}
+
+void list_files(const char* dir)
+{
+    if(dir != nullptr)
+    {
+        DIR *catalog = opendir(dir);
+        if(catalog == NULL)
+        {
+            printf("opendir() error: %s", strerror(errno));
+            return;
+        }
+
+        struct dirent *pDirent;
+
+        while((pDirent = readdir(catalog)) != NULL)
+            //if(strncmp(pDirent->d_name, ".", 0) == 0) continue;
+            printf("[%s]\t", pDirent->d_name);
+      
+        printf("\n");
+    } 
+
 
 }
