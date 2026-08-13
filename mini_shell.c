@@ -11,7 +11,9 @@
 #include <sys/types.h>
 
 void directory_navigation(char*);
-void list_files(const char*);
+void list_files();
+void list_files(char*);
+void castingStreamInput(char*);
 
 int main(){
 
@@ -35,15 +37,17 @@ while(true){
     int result = strncmp(command, "cd\0", 3); 
  
     if(strncmp(command, "cd ", 3) == 0) directory_navigation(command);
-    if(strncmp(command, "ls", 2) == 0) list_files(current_dir);      
          
+    //if(strncmp(command, "ls", 2) == 0) list_files(current_dir);      
       
+    if(strncmp(command, "ls", 2) == 0) list_files(command);      
 	}
 
     return 0;
 }
 
-  
+
+
 void directory_navigation(char* directory)
 {
     if(directory != nullptr)
@@ -60,6 +64,16 @@ void directory_navigation(char* directory)
 
 }
 
+void list_files(char* command)
+{
+    //int pid = fork();
+    //printf("ZWROCONE PID: %i\n", pid);
+    //printf("PPID: %i\n", getppid());
+    castingStreamInput(command);
+}
+
+
+/*
 void list_files(const char* dir)
 {
     if(dir != nullptr)
@@ -74,11 +88,50 @@ void list_files(const char* dir)
         struct dirent *pDirent;
 
         while((pDirent = readdir(catalog)) != NULL)
-            //if(strncmp(pDirent->d_name, ".", 0) == 0) continue;
+            if(strncmp(pDirent->d_name, ".", 1) == 0) continue;
             printf("[%s]\t", pDirent->d_name);
       
         printf("\n");
     } 
+}
+*/
 
+void castingStreamInput(char* command)
+{
+    int array_size = 1;
+    int i = 1;
+    char* token = strtok(command, " ");
+    char** token_array = (char**) malloc(array_size * sizeof(*token_array));
+
+    token_array[0] = token;
+
+    while(token != NULL)
+    {
+        
+        printf("%s\n", token);
+        token = strtok(NULL, " ");
+
+        if(token != NULL){
+            array_size++;
+            char** tmp = (char**) realloc(token_array, array_size * sizeof(*token_array));
+            if(tmp != NULL)
+            {
+                token_array = tmp;
+                token_array[i] = (char*) malloc(sizeof(token));
+                strcpy(token_array[i], token);
+                i++;
+            }
+        }
+
+        //token_array[i] = malloc(30);
+        //strcpy(token_array[i], token);
+    }
+    size_t size = 0;
+    //i -= 1;
+    for(int index = 0; index < i; index++){
+        size += sizeof(token_array) / sizeof(token_array[i]);
+   }
+
+        printf("\nrozmiar tablicy: %zu\n", size);
 
 }
