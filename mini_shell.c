@@ -98,14 +98,7 @@ char** castingStreamInput(char* command)
             i++;
         }
     }
-    
-    size_t size = 0; 
-    for(int index = 0; index < i; index++){
-        size += sizeof(token_array) / sizeof(token_array[i]);
-   }
-    printf("\nrozmiar tablicy: %zu\n", size);
-    
-
+    return token_array;
 }
 
 char* trim(char* command){
