@@ -16,6 +16,7 @@ void list_files();
 void list_files(char*);
 char** castingStreamInput(char*);
 char* trim(char*);
+void freeArray(char**);
 
 int main(){
 
@@ -39,10 +40,10 @@ while(true){
     int result = strncmp(command, "cd\0", 3); 
  
     if(strncmp(command, "cd ", 3) == 0) directory_navigation(command);
-         
+    else list_files(command);      
     //if(strncmp(command, "ls", 2) == 0) list_files(current_dir);      
-      
-    if(strncmp(command, "ls", 2) == 0) list_files(command);      
+   
+    //if(strncmp(command, "ls", 2) == 0) list_files(command);      
 	}
 
     return 0;
@@ -70,8 +71,10 @@ void list_files(char* command)
 {
     if(fork() == 0){
         char** input_stream_ptr = castingStreamInput(command);
-        execv("/bin/ls", input_stream_ptr);
+        //execv("/bin/ls", input_stream_ptr);
+        execvp(input_stream_ptr[0], input_stream_ptr);
         perror("Blad uruchamiania programu");
+        freeArray(input_stream_ptr);
         exit(1);
     }
     wait(NULL);
@@ -83,23 +86,32 @@ char** castingStreamInput(char* command)
     int array_size = 1;
     int i = 1;
     char* token = strtok(command, " ");
-    char** token_array = (char**) malloc(array_size * sizeof(*token_array));
-    token_array[0] = token;
+    char** token_array = (char**) malloc(sizeof(char*));
+
+    if(token != NULL){
+        token_array[0] = (char*) malloc(strlen(token) + 1);
+        strcpy(token_array[0], trim(token));
+    }
 
     while(token != NULL){
         token = strtok(NULL, " ");
         array_size++;
-        char** tmp = (char**) realloc(token_array, array_size * sizeof(*token_array));
+        char** tmp = (char**) realloc(token_array, array_size * sizeof(char*));
+
         if(tmp != NULL){
             token_array = tmp;
-            token_array[i] = (char*) malloc(sizeof(token));
-            if(token != NULL) strcpy(token_array[i], trim(token));
+            if(token != NULL){
+               token = trim(token);
+               token_array[i] = (char*) malloc(strlen(token) + 1);
+               strcpy(token_array[i], token);
+            }
             else token_array[i] = NULL;
             i++;
         }
     }
     return token_array;
 }
+
 
 char* trim(char* command){
 
@@ -109,4 +121,11 @@ char* trim(char* command){
         command[index] = '\0';
     }
     return command;
+}
+
+
+void freeArray(char** input)
+{
+    size_t num_of_elements = sizeof(input) / sizeof(char*);
+    printf("Liczba elementow: %zs\n", num_of_elements);
 }
