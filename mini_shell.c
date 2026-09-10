@@ -40,6 +40,7 @@ while(true){
     int result = strncmp(command, "cd\0", 3); 
  
     if(strncmp(command, "cd ", 3) == 0) directory_navigation(command);
+    else if(strncmp(command, "exit", 4) == 0) exit(0);
     else list_files(command);      
     //if(strncmp(command, "ls", 2) == 0) list_files(current_dir);      
    
