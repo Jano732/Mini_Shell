@@ -62,7 +62,10 @@ void directory_navigation(char* directory)
         int newline_index = strcspn(space_ptr, "\n");
         space_ptr[newline_index] = '\0';       
         const char* upcoming_directory = space_ptr;
-        if(chdir(upcoming_directory)) 
+        if(strcmp(upcoming_directory, "~") == 0){
+            chdir("/home/vboxuser/");
+        }
+        else if(chdir(upcoming_directory)) 
             printf("chdir() error: %s | %s\n",upcoming_directory, strerror(errno));
     }
 
