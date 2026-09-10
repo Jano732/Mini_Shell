@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 
+#include <stdio.h>
 #include <cstdio>
 #include <stdbool.h>
 #include <unistd.h>
@@ -13,7 +14,7 @@
 
 void directory_navigation(char*);
 void list_files();
-void list_files(char*);
+void non_build_in(char*);
 char** castingStreamInput(char*);
 char* trim(char*);
 void freeArray(char**);
@@ -23,12 +24,23 @@ int main(){
    char* current_dir;
    char precommand[64]; 
    char command[64];
+   char hostname[16];
+   char user_hostname[32];
+   memset(user_hostname, '\0', sizeof(user_hostname));
+
+   char* user = getenv("USERNAME");
+   gethostname(hostname, sizeof(hostname));
+   strcat(user_hostname, user);
+   strcat(user_hostname, "@");
+   strcat(user_hostname, hostname);
+   strcat(user_hostname, ":");
 
 while(true){
-      
+
     memset(precommand, '\0', sizeof(precommand));
     memset(command, '\0', sizeof(command));
     current_dir = nullptr;
+    strcpy(precommand, user_hostname);
 
     current_dir = get_current_dir_name();
     strcat(precommand, current_dir);
@@ -40,8 +52,8 @@ while(true){
     int result = strncmp(command, "cd\0", 3); 
  
     if(strncmp(command, "cd ", 3) == 0) directory_navigation(command);
-    else if(strncmp(command, "exit", 4) == 0) exit(0);
-    else list_files(command);      
+    else if(strncmp(command, "exit", 4) == 0) exit(0); 
+    else non_build_in(command);      
     //if(strncmp(command, "ls", 2) == 0) list_files(current_dir);      
    
     //if(strncmp(command, "ls", 2) == 0) list_files(command);      
@@ -71,7 +83,7 @@ void directory_navigation(char* directory)
 
 }
 
-void list_files(char* command)
+void non_build_in(char* command)
 {
     if(fork() == 0){
         char** input_stream_ptr = castingStreamInput(command);
