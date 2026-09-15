@@ -1,10 +1,9 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
-#include <cstdio>
 #include <stdbool.h>
 #include <unistd.h>
-#include <cstring>
+#include <string.h>
 #include <stdarg.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -39,14 +38,14 @@ while(true){
 
     memset(precommand, '\0', sizeof(precommand));
     memset(command, '\0', sizeof(command));
-    current_dir = nullptr;
+    current_dir = NULL;
     strcpy(precommand, user_hostname);
 
     current_dir = get_current_dir_name();
     strcat(precommand, current_dir);
     strcat(precommand, "$ ");
 
-    printf(precommand);
+    printf("%s" ,precommand);
     fgets(command, 64, stdin);
 
     int result = strncmp(command, "cd\0", 3); 
@@ -56,7 +55,9 @@ while(true){
     else non_build_in(command);      
     //if(strncmp(command, "ls", 2) == 0) list_files(current_dir);      
    
-    //if(strncmp(command, "ls", 2) == 0) list_files(command);      
+    //if(strncmp(command, "ls", 2) == 0) list_files(command);
+
+    free(current_dir);
 	}
 
     return 0;
@@ -66,7 +67,7 @@ while(true){
 
 void directory_navigation(char* directory)
 {
-    if(directory != nullptr)
+    if(directory != NULL)
     {
 
         char *space_ptr = strchr(directory, ' ');
