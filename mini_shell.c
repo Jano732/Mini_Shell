@@ -1,8 +1,10 @@
 #define _GNU_SOURCE
 
+#include "build-ins.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
@@ -21,13 +23,14 @@ void freeArray(char**);
 int main(){
 
    char* current_dir;
-   char precommand[64]; 
+   char precommand[100]; 
    char command[64];
    char hostname[16];
    char user_hostname[32];
    memset(user_hostname, '\0', sizeof(user_hostname));
 
-   char* user = getenv("USERNAME");
+   //char* user = getenv("USERNAME");
+   char* user =  getlogin();
    gethostname(hostname, sizeof(hostname));
    strcat(user_hostname, user);
    strcat(user_hostname, "@");
@@ -41,7 +44,8 @@ while(true){
     current_dir = NULL;
     strcpy(precommand, user_hostname);
 
-    current_dir = get_current_dir_name();
+    //current_dir = get_current_dir_name();
+	current_dir = getcwd(NULL, 0);
     strcat(precommand, current_dir);
     strcat(precommand, "$ ");
 
@@ -64,25 +68,6 @@ while(true){
 }
 
 
-
-void directory_navigation(char* directory)
-{
-    if(directory != NULL)
-    {
-
-        char *space_ptr = strchr(directory, ' ');
-        space_ptr++;
-        int newline_index = strcspn(space_ptr, "\n");
-        space_ptr[newline_index] = '\0';       
-        const char* upcoming_directory = space_ptr;
-        if(strcmp(upcoming_directory, "~") == 0){
-            chdir("/home/vboxuser/");
-        }
-        else if(chdir(upcoming_directory)) 
-            printf("chdir() error: %s | %s\n",upcoming_directory, strerror(errno));
-    }
-
-}
 
 void non_build_in(char* command)
 {
