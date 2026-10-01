@@ -35,30 +35,40 @@ void directory_navigation(char* directory)
 
 void history_add(char* command)
 {
-       int fd = open("/home/vboxuser/coding/cwiczenia/miniShell/.bash_history_minishell", O_RDWR | O_CREAT | O_EXCL |
-       O_APPEND, S_IRWXU, S_IRWXG);
 
-       int last_number = 0;
+    struct stat st;
 
-       struct stat st;
-       if(fstat(fd, &st) == -1) perror("fstat");
+    int fd = open("/home/vboxuser/coding/cwiczenia/miniShell/.bash_history_minishell", O_RDWR | O_CREAT |
+    O_APPEND, S_IRWXU, S_IRWXG);
 
-       if(fd != 0) perror("open");
+    if((fd != 0) && (fstat(fd, &st) == 0)){
 
-       char* buffer = malloc(st.st_size);
+        char* buffer = malloc(st.st_size);
+        int readres = read(fd, buffer, st.st_size);
+        int last_number = 0;
 
-       int readres = read(fd, buffer, st.st_size);
-
-       for(int i = (st.st_size - 2); i > 0; i--)
-       {
+        for(int i = (st.st_size - 2); i > 0; i--){
             if(buffer[i] == '\n'){
-               last_number = buffer[i+1] - '0';
-               break;
-            }
-       }
+                last_number = buffer[i+1] - '0';
+                break;
+                }
+        }
+        
+        free(buffer);
+        buffer = malloc(sizeof(command) + 2);
+        
+        last_number++;
+        char casted_last_number[2];
+        snprintf(casted_last_number, sizeof(casted_last_number), "%d", last_number);
+        strcat(buffer, casted_last_number);
+        strcat(buffer, " ");
+        strcat(buffer, command);
+        
+        if(lseek(fd, 0, SEEK_END) != -1){
+           write(fd, buffer, sizeof(buffer)); 
+        }
 
-       printf("%i\n", last_number);
-
+    } else perror("file");
 }
 
 
