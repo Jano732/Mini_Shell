@@ -33,10 +33,11 @@ void directory_navigation(char* directory)
 
 }
 
-void history_add(char* command)
+void history_add(char* command, size_t size)
 {
 
     struct stat st;
+    int last_number = 0;
 
     int fd = open("/home/vboxuser/coding/cwiczenia/miniShell/.bash_history_minishell", O_RDWR | O_CREAT |
     O_APPEND, S_IRWXU, S_IRWXG);
@@ -45,7 +46,6 @@ void history_add(char* command)
 
         char* buffer = malloc(st.st_size);
         int readres = read(fd, buffer, st.st_size);
-        int last_number = 0;
 
         for(int i = (st.st_size - 2); i > 0; i--){
             if(buffer[i] == '\n'){
@@ -55,7 +55,7 @@ void history_add(char* command)
         }
         
         free(buffer);
-        buffer = malloc(sizeof(command) + 2);
+        buffer = calloc(size, sizeof(char));
         
         last_number++;
         char casted_last_number[2];
@@ -63,12 +63,16 @@ void history_add(char* command)
         strcat(buffer, casted_last_number);
         strcat(buffer, " ");
         strcat(buffer, command);
-        
+  
+        printf("%s\n", buffer);
+
         if(lseek(fd, 0, SEEK_END) != -1){
-           write(fd, buffer, sizeof(buffer)); 
+         write(fd, buffer, size); 
         }
 
-    } else perror("file");
+        close(fd);
+
+    }
 }
 
 

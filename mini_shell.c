@@ -60,7 +60,7 @@ while(true){
     //if(strncmp(command, "ls", 2) == 0) list_files(current_dir);      
    
     //if(strncmp(command, "ls", 2) == 0) list_files(command);
-    history_add(command);
+    history_add(command, sizeof(command));
     free(current_dir);
 	}
 
