@@ -59,11 +59,18 @@ void history_add(char* command, size_t size)
         
         last_number++;
         char casted_last_number[2];
+
+//TODO trzeba obciac buffer o niepotrzebnie zaalokowane bajty, poniewaz
+//sa one zapisywane do pliku i rozjezdza sie odczytywanie ostatniego
+//numeru.
+
         snprintf(casted_last_number, sizeof(casted_last_number), "%d", last_number);
         strcat(buffer, casted_last_number);
         strcat(buffer, " ");
         strcat(buffer, command);
-  
+        
+        char* tmp = realloc(buffer, sizeof
+
         printf("%s\n", buffer);
 
         if(lseek(fd, 0, SEEK_END) != -1){
